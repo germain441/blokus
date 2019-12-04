@@ -67,35 +67,48 @@ def choix_couleur(coup):
 def rotation(pion, couleur):
     index = pion -1
     pion = piece[index]
-    pion1 = pion2 = pion3 = [[0, 0, 0, 0, 0],
-                             [0, 0, 0, 0, 0],
-                             [0, 0, 0, 0, 0],
-                             [0, 0, 0, 0, 0],
-                             [0, 0, 0, 0, 0]]
+    pion1 = [[0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0]]
+
+    pion2 = [[0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0]]
+
+    pion3 = [[0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0],
+             [0, 0, 0, 0, 0]]
+
 
     for i in range(5):
         for j in range(5):
-            if pion[i][j] == 1 :
-                pion1[i][2-(j-2)] = 1
-                pion2[(2-(i-2))][j] = 1
-            else :
-                pion1[i][2 - (j - 2)] = 0
-                pion2[2 - (i - 2)][j] = 0
-            #pion3[2 - (i - 2)][2 - (j - 2)] = pion[i][j]
+            pion1[i][2 - (j - 2)] = pion[i][j]
+            pion2[2 - (i - 2)][j] = pion[i][j]
+            pion3[2 - (i - 2)][2 - (j - 2)] = pion[i][j]
+
+
     rotation_pion = [pion, pion1, pion2, pion3]
+
     for i in range(5):
+        for x in range(4):
+            for j in range(5):
+                if rotation_pion[x][i][j]==1:
+                    print(couleur + '  '+ Back.RESET, end='')
+                else :
+                    print('  ', end='')
+
+        print(' ', end=' ')
         print()
-        for j in range(5):
-            print(pion2[i][j], end='')
-    #for x in range(0,2):
-     #    for i in range(5):
-      #      print()
-       #     for j in range(5):
-        #        if rotation_pion[x][i][j]==1:
-         #           print(couleur + '  '+ Back.RESET, end='')
-          #      else:
-           #         print('  ', end='')
-         #print(' ', end='')
+
+    num_rotation = int(input("Quelle rotation voulez-vous effectuer ? "))
+
+    piece[index] = rotation_pion[num_rotation - 1]
 
 
 
