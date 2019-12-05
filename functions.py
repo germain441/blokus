@@ -1,59 +1,56 @@
-import colorama
-from colorama import Fore, Back, Style
 from pieces import *
 
 
 def init_grille():
-    grille = []
-    for i in range (22):
-        grille.append(['• ']* 22)
+    _grille = []
+    for i in range(22):
+        _grille.append(['• '] * 22)
 
     for i in range(21):
-        grille[i][0]=i
-        grille[0][i]=i
-    for i in range(1,22):
-        grille[i][21]='|'
-        grille[21][i]='- '
-    return grille
+        _grille[i][0] = i
+        _grille[0][i] = i
+    for i in range(1, 22):
+        _grille[i][21] = '|'
+        _grille[21][i] = '- '
+    return _grille
 
 
 grille = init_grille()
 
 
-def afficher_grille(grille):
-    longueur = len(grille)
+def afficher_grille(_grille):
+    longueur = len(_grille)
 
     for i in range(longueur):
         print()
-        for j in range (longueur):
-            if (i < 10) and (j == 0) :
-                print(grille[i][j], end=' ')
-            elif ( j < 10) and (i==0):
-                if j==9 :
-                    print(grille[i][j], end ='')
-                else :
-                    print(grille[i][j],  end=' ')
-            elif (j >= 10) and (i == 0):
-                print(grille[i][j],  end='')
+        for j in range(longueur):
+            if i < 10 and j == 0:
+                print(_grille[i][j], end=' ')
+            elif j < 10 and i == 0:
+                if j == 9:
+                    print(_grille[i][j], end='')
+                else:
+                    print(_grille[i][j], end=' ')
+            elif j >= 10 and i == 0:
+                print(_grille[i][j], end='')
             else:
-               print(grille[i][j], end= '')
-    print()
-    print()
+                print(_grille[i][j], end='')
+    print('\n')
 
 
-def ajouter(grille, x, y, pion, couleur):
+def ajouter(_grille, x, y, pion, couleur):
     index = pion - 1
-    pion = piece[index]
+    pion = dico[couleur][index]
 
     for i in range(5):
         for j in range(5):
-            if pion[i][j] == 1 and grille[x + i][y + j] != '• ':
+            if pion[i][j] == 1 and _grille[x + i][y + j] != '• ':
                 return False
 
     for i in range(5):
         for j in range(5):
             if pion[i][j] == 1:
-                grille[x + i][y + j] = (couleur + '  ' + Back.RESET)
+                _grille[x + i][y + j] = (couleur + '  ' + Back.RESET)
 
     dico[couleur][index] = False
 
@@ -65,87 +62,101 @@ def choix_couleur(coup):
 
 
 def rotation(pion, couleur):
-    index = pion -1
-    pion = piece[index]
-    pion1 = [[0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0]]
+    index = pion - 1
+    pion = dico[couleur][index]
 
-    pion2 = [[0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0]]
-
-    pion3 = [[0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0]]
-
+    pion1 = [[0 for i in range(5)] for j in range(5)]
+    pion2 = [[0 for i in range(5)] for j in range(5)]
+    pion3 = [[0 for i in range(5)] for j in range(5)]
 
     for i in range(5):
         for j in range(5):
-            pion1[i][2 - (j - 2)] = pion[i][j]
-            pion2[2 - (i - 2)][j] = pion[i][j]
-            pion3[2 - (i - 2)][2 - (j - 2)] = pion[i][j]
+            pion1[i][j] = pion[4 - j][i]
+            pion2[i][j] = pion[4 - i][4 - j]
+            pion3[i][j] = pion[j][4 - i]
 
+    for elem in [pion1, pion2, pion3]:
+        _quit = False
+        while not _quit:
+            for i in range(5):
+                if elem[0][i] == 1:
+                    _quit = True
+                    break
+            if _quit:
+                break
+            for i in range(4):
+                elem[i], elem[i + 1] = elem[i + 1], elem[i]
 
-    rotation_pion = [pion, pion1, pion2, pion3]
+        _quit = False
+        while not _quit:
+            for i in range(5):
+                if elem[i][0] == 1:
+                    _quit = True
+                    break
+            if _quit:
+                break
+            for i in range(5):
+                for j in range(4):
+                    elem[i][j], elem[i][j + 1] = elem[i][j + 1], elem[i][j]
 
+    print(1, " " * 4, 2, " " * 4, 3, " " * 4, 4)
     for i in range(5):
-        for x in range(4):
+        for elem in [pion, pion1, pion2, pion3]:
             for j in range(5):
-                if rotation_pion[x][i][j]==1:
-                    print(couleur + '  '+ Back.RESET, end='')
-                else :
-                    print('  ', end='')
-
-        print(' ', end=' ')
+                if elem[i][j] == 1:
+                    print(couleur + ' ' + Back.RESET, end='')
+                else:
+                    print(end=' ')
+            print(end="  ")
         print()
 
-    num_rotation = int(input("Quelle rotation voulez-vous effectuer ? "))
+    _quit = False
+    x = 0
+    while not _quit:
+        x = int(input("Quel rotation ?"))
+        if not 1 <= x <= 4:
+            print("choix non valide")
+            continue
+        _quit = True
 
-    piece[index] = rotation_pion[num_rotation - 1]
-
+    dico[couleur][index] = [pion, pion1, pion2, pion3][x - 1]
 
 
 def jouer():
-    coup=0
-    fin = True
+    coup = 0
     coup_valide = False
 
-    while fin:
-        while not coup_valide:
-            couleur = choix_couleur(coup)
-            piece_dispo(couleur)
-            pion = int(input('quel pion voulez vous jouer ? '))
-            rotation(pion, couleur)
-            if dico[couleur][pion - 1]:
-                if coup == 0:
-                    x = 1
-                    y = 1
-                elif coup == 1:
-                    x = 20
-                    y = 1
-                elif coup == 2:
-                    x = 1
-                    y = 20
-                elif coup == 3:
-                    x = 20
-                    y = 20
-                else:
-                    x = int(input('Entrez la ligne :'))
-                    y = int(input('Entrez la colonne : '))
-                if 0 < x < 21 and 0 < y < 21:
-                    coup_valide = ajouter(grille, x, y, pion, couleur)
-                    afficher_grille(grille)
-                    if coup_valide:
-                        coup = coup + 1
-                else:
-                    print('Coordonnee non valides')
+    while not coup_valide:
+        couleur = choix_couleur(coup)
+        piece_dispo(couleur)
+        pion = int(input('quel pion voulez vous jouer ? '))
+        if not dico[couleur][pion - 1]:
+            print("Piece non disponible ")
+        rotation(pion, couleur)
+
+        if coup == 0:
+            x = 1
+            y = 1
+        elif coup == 1:
+            x = 20
+            y = 1
+        elif coup == 2:
+            x = 1
+            y = 20
+        elif coup == 3:
+            x = 20
+            y = 20
+        else:
+            x = int(input('Entrez la ligne :'))
+            y = int(input('Entrez la colonne : '))
+        if 0 < x < 21 and 0 < y < 21:
+            coup_valide = ajouter(grille, x, y, pion, couleur)
+            afficher_grille(grille)
+            if coup_valide:
+                coup = coup + 1
             else:
-                print("Piece non disponible ")
+                print("coup non valide")
+        else:
+            print('Coordonnee non valides')
+
         coup_valide = False

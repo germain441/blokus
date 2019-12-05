@@ -1,15 +1,4 @@
-import colorama
 from colorama import Fore, Back, Style
-
-piece_R = [True] * 21
-
-piece_B = [True] * 21
-
-piece_J = [True] * 21
-
-piece_V = [True] * 21
-
-dico = {Back.RED: piece_R, Back.BLUE: piece_B, Back.YELLOW: piece_J, Back.GREEN: piece_V}
 
 # 1 block
 p1 = [[1, 0, 0, 0, 0],
@@ -87,6 +76,7 @@ p12 = [[0, 1, 0, 0, 0],
        [1, 1, 0, 0, 0],
        [1, 0, 0, 0, 0],
        [0, 0, 0, 0, 0]]
+
 p13 = [[0, 1, 0, 0, 0],
        [1, 1, 0, 0, 0],
        [1, 1, 0, 0, 0],
@@ -141,14 +131,17 @@ p21 = [[0, 1, 0, 0, 0],
        [0, 0, 0, 0, 0],
        [0, 0, 0, 0, 0]]
 
-piece = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21]
+
+def get_piece():
+    return [x.copy() for x in
+            [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21]]
 
 
-def largeur_piece(i):
-    largeur = 0
+def largeur_piece(piece):
+    largeur = -1
     for x in range(5):
         for y in range(5):
-            if piece[i][x][y] == 1 and largeur < y:
+            if piece[x][y] == 1 and largeur < y:
                 largeur = y
     return largeur + 1
 
@@ -176,12 +169,24 @@ def piece_dispo(couleur):
     numero_piece(dico[couleur])
     for j in range(5):
         for i in range(21):
-            if dico[couleur][i]:
-                largeur = largeur_piece(i)
+            piece = dico[couleur][i]
+            if piece:
+                largeur = largeur_piece(piece)
                 for x in range(largeur):
-                    if piece[i][j][x] == 1:
+                    if piece[j][x] == 1:
                         print(couleur + '  ' + Back.RESET, end='')
                     else:
                         print('  ', end='')
             print('  ', end='')
         print()
+
+
+piece_R = get_piece()
+
+piece_B = get_piece()
+
+piece_J = get_piece()
+
+piece_V = get_piece()
+
+dico = {Back.RED: piece_R, Back.BLUE: piece_B, Back.YELLOW: piece_J, Back.GREEN: piece_V}
