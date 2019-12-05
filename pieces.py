@@ -138,7 +138,7 @@ def get_piece():
 
 
 def largeur_piece(piece):
-    largeur = -1
+    largeur = 0
     for x in range(5):
         for y in range(5):
             if piece[x][y] == 1 and largeur < y:

@@ -37,20 +37,29 @@ def afficher_grille(_grille):
                 print(_grille[i][j], end='')
     print('\n')
 
+def point_encrage(pion):
+    encrage = 0
+    j = 0
+    while pion[0][j] == 0 :
+            encrage = encrage + 1
+            j = j +1
+    return encrage
+
 
 def ajouter(_grille, x, y, pion, couleur):
     index = pion - 1
+
     pion = dico[couleur][index]
 
     for i in range(5):
         for j in range(5):
-            if pion[i][j] == 1 and _grille[x + i][y + j] != '• ':
+            if pion[i][j] == 1 and _grille[x + i][y + (j-point_encrage(pion))] != '• ':
                 return False
 
     for i in range(5):
         for j in range(5):
             if pion[i][j] == 1:
-                _grille[x + i][y + j] = (couleur + '  ' + Back.RESET)
+                _grille[x + i][y + (j-point_encrage(pion))] = (couleur + '  ' + Back.RESET)
 
     dico[couleur][index] = False
 
@@ -123,6 +132,7 @@ def rotation(pion, couleur):
 
 
 def jouer():
+
     coup = 0
     coup_valide = False
 
