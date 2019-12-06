@@ -190,3 +190,5 @@ piece_J = get_piece()
 piece_V = get_piece()
 
 dico = {Back.RED: piece_R, Back.BLUE: piece_B, Back.YELLOW: piece_J, Back.GREEN: piece_V}
+
+dico_coin = []

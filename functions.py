@@ -37,37 +37,57 @@ def afficher_grille(_grille):
                 print(_grille[i][j], end='')
     print('\n')
 
+
 def point_encrage(pion):
-    encrage = 0
-    j = 0
-    while pion[0][j] == 0 :
-            encrage = encrage + 1
-            j = j +1
-    return encrage
+    for j in range(5):
+        if pion[0][j] == 1:
+            return -j
+    raise Exception("il n'y a pas de 1 sur la première ligne")
 
 
-def ajouter(_grille, x, y, pion, couleur):
+def dans_un_coin(x, y, _grille, couleur):
+    if (x - 1 > 0 and ((y - 1 > 0 and _grille[x - 1][y - 1] == couleur + '  ' + Back.RESET) or (
+            y + 1 < 21 and _grille[x - 1][y + 1] == couleur + '  ' + Back.RESET))) or (x + 1 < 21 and (
+            (y - 1 > 0 and _grille[x + 1][y - 1] == couleur + '  ' + Back.RESET) or (
+            y + 1 < 21 and _grille[x + 1][y + 1] == couleur + '  ' + Back.RESET))):
+        return True
+
+    return False
+
+
+def ajouter(_grille, x, y, pion, couleur, verif=True):
     index = pion - 1
 
     pion = dico[couleur][index]
+    if verif and not dans_un_coin(x, y, _grille,couleur):
+        return False
+    y += point_encrage(pion)
 
     for i in range(5):
         for j in range(5):
-            if pion[i][j] == 1 and _grille[x + i][y + (j-point_encrage(pion))] != '• ':
+            if pion[i][j] == 1 and _grille[x + i][y + j] != '• ':
                 return False
 
     for i in range(5):
         for j in range(5):
             if pion[i][j] == 1:
-                _grille[x + i][y + (j-point_encrage(pion))] = (couleur + '  ' + Back.RESET)
+                _grille[x + i][y + j] = (couleur + '  ' + Back.RESET)
 
     dico[couleur][index] = False
-
     return True
 
 
 def choix_couleur(coup):
     return [Back.RED, Back.BLUE, Back.GREEN, Back.YELLOW][coup % 4]
+
+
+def _coup(liste):
+    i = 0
+    for elem in liste:
+        for _elem in elem:
+            if _elem:
+                i += 1
+    return i
 
 
 def rotation(pion, couleur):
@@ -84,33 +104,60 @@ def rotation(pion, couleur):
             pion2[i][j] = pion[4 - i][4 - j]
             pion3[i][j] = pion[j][4 - i]
 
-    for elem in [pion1, pion2, pion3]:
+    _rotation = [pion, pion1, pion2, pion3]
+
+    for elem in range(1, 4):
         _quit = False
         while not _quit:
             for i in range(5):
-                if elem[0][i] == 1:
+                if _rotation[elem][0][i] == 1:
                     _quit = True
                     break
             if _quit:
                 break
             for i in range(4):
-                elem[i], elem[i + 1] = elem[i + 1], elem[i]
+                _rotation[elem][i], _rotation[elem][i + 1] = _rotation[elem][i + 1], _rotation[elem][i]
 
         _quit = False
         while not _quit:
             for i in range(5):
-                if elem[i][0] == 1:
+                if _rotation[elem][i][0] == 1:
                     _quit = True
                     break
             if _quit:
                 break
             for i in range(5):
                 for j in range(4):
-                    elem[i][j], elem[i][j + 1] = elem[i][j + 1], elem[i][j]
+                    _rotation[elem][i][j], _rotation[elem][i][j + 1] = _rotation[elem][i][j + 1], _rotation[elem][i][j]
 
-    print(1, " " * 4, 2, " " * 4, 3, " " * 4, 4)
+    def equals(a, b):
+        t = len(a)
+        if t != len(b):
+            return False
+        for i in range(t):
+            for j in range(t):
+                if a[i][j] != b[i][j]:
+                    return False
+        return True
+
+    if equals(_rotation[0], _rotation[2]):
+        _rotation.pop(2)
+
+    if equals(_rotation[1], _rotation[2]):
+        _rotation.pop(2)
+
+    if equals(_rotation[0], _rotation[1]):
+        _rotation.pop(1)
+
+    for i in range(1, len(_rotation) + 1):
+        print(i, " " * 5, end='')
+    print()
+
+    if len(_rotation) <= 1:
+        return
+
     for i in range(5):
-        for elem in [pion, pion1, pion2, pion3]:
+        for elem in _rotation:
             for j in range(5):
                 if elem[i][j] == 1:
                     print(couleur + ' ' + Back.RESET, end='')
@@ -122,7 +169,7 @@ def rotation(pion, couleur):
     _quit = False
     x = 0
     while not _quit:
-        x = int(input("Quel rotation ?"))
+        x = int(input("Quelle rotation ?"))
         if not 1 <= x <= 4:
             print("choix non valide")
             continue
@@ -132,7 +179,6 @@ def rotation(pion, couleur):
 
 
 def jouer():
-
     coup = 0
     coup_valide = False
 
@@ -160,7 +206,7 @@ def jouer():
             x = int(input('Entrez la ligne :'))
             y = int(input('Entrez la colonne : '))
         if 0 < x < 21 and 0 < y < 21:
-            coup_valide = ajouter(grille, x, y, pion, couleur)
+            coup_valide = ajouter(grille, x, y, pion, couleur, coup >= 4)
             afficher_grille(grille)
             if coup_valide:
                 coup = coup + 1
