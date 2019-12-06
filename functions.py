@@ -59,14 +59,21 @@ def ajouter(_grille, x, y, pion, couleur, verif=True):
     index = pion - 1
 
     pion = dico[couleur][index]
-    if verif and not dans_un_coin(x, y, _grille,couleur):
-        return False
+   # if verif and not dans_un_coin(x, y, _grille, couleur):
+       # return False
     y += point_encrage(pion)
 
     for i in range(5):
         for j in range(5):
             if pion[i][j] == 1 and _grille[x + i][y + j] != '• ':
                 return False
+    print(end='t')
+    for i in range(5):
+        for j in range(5):
+            if pion[i][j] == 1:
+                if _grille[x-1 + i][y+j] == (couleur + '  ' + Back.RESET) or _grille[x+1+i][y+j] == (couleur + '  ' + Back.RESET) or _grille[x+i][y-1+j] == (couleur + '  ' + Back.RESET) or _grille[x+i][y+1+j] == (couleur + '  ' + Back.RESET) :
+                    return False
+    print(end='t2')
 
     for i in range(5):
         for j in range(5):
