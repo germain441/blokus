@@ -164,7 +164,7 @@ def numero_piece(liste):
     print()
 
 
-def piece_dispo(couleur):
+def piece_dispo(dico, couleur):
     print()
     numero_piece(dico[couleur])
     for j in range(5):
@@ -177,18 +177,11 @@ def piece_dispo(couleur):
                         print(couleur + '  ' + Back.RESET, end='')
                     else:
                         print('  ', end='')
-            print('  ', end='')
+                print('  ', end='')
         print()
 
 
 piece_R = get_piece()
-
 piece_B = get_piece()
-
 piece_J = get_piece()
-
 piece_V = get_piece()
-
-dico = {Back.RED: piece_R, Back.BLUE: piece_B, Back.YELLOW: piece_J, Back.GREEN: piece_V}
-
-dico_coin = []

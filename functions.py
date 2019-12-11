@@ -1,4 +1,8 @@
 from pieces import *
+import pickle
+import os
+
+dico = {Back.RED: piece_R, Back.BLUE: piece_B, Back.YELLOW: piece_J, Back.GREEN: piece_V}
 
 
 def init_grille():
@@ -55,12 +59,10 @@ def dans_un_coin(x, y, _grille, couleur):
     return False
 
 
-def ajouter(_grille, x, y, pion, couleur, verif=True):
+def ajouter(_grille, x, y, pion, couleur):
     index = pion - 1
 
     pion = dico[couleur][index]
-   # if verif and not dans_un_coin(x, y, _grille, couleur):
-       # return False
     y += point_encrage(pion)
 
     for i in range(5):
@@ -71,7 +73,9 @@ def ajouter(_grille, x, y, pion, couleur, verif=True):
     for i in range(5):
         for j in range(5):
             if pion[i][j] == 1:
-                if _grille[x-1 + i][y+j] == (couleur + '  ' + Back.RESET) or _grille[x+1+i][y+j] == (couleur + '  ' + Back.RESET) or _grille[x+i][y-1+j] == (couleur + '  ' + Back.RESET) or _grille[x+i][y+1+j] == (couleur + '  ' + Back.RESET) :
+                if _grille[x - 1 + i][y + j] == (couleur + '  ' + Back.RESET) or _grille[x + 1 + i][y + j] == (
+                        couleur + '  ' + Back.RESET) or _grille[x + i][y - 1 + j] == (couleur + '  ' + Back.RESET) or \
+                        _grille[x + i][y + 1 + j] == (couleur + '  ' + Back.RESET):
                     return False
 
     for i in range(5):
@@ -85,6 +89,32 @@ def ajouter(_grille, x, y, pion, couleur, verif=True):
 
 def choix_couleur(coup):
     return [Back.RED, Back.BLUE, Back.GREEN, Back.YELLOW][coup % 4]
+
+
+def sauvegarder_partie(coup):
+    if not os.path.isdir("loads"):
+        os.mkdir("loads")
+    config = {"pieces": dico, "grille": grille, "coup": coup}
+    p = open("loads/save", "wb")
+    pickle.dump(config, p)
+    p.close()
+
+
+def charger_partie():
+    global grille, dico
+
+    try:
+        p = open("loads/save", "rb")
+        config = pickle.load(p)
+        p.close()
+        dico = config["pieces"]
+        grille = config["grille"]
+        return config["coup"]
+    except (OSError, IOError) as e:
+        print("Il n'y a pas de fichier de sauvegarde")
+        input("appuyer entrer ")
+        print(e)
+        return 0
 
 
 def _coup(liste):
@@ -140,9 +170,9 @@ def rotation(pion, couleur):
         t = len(a)
         if t != len(b):
             return False
-        for i in range(t):
-            for j in range(t):
-                if a[i][j] != b[i][j]:
+        for _i in range(t):
+            for _j in range(t):
+                if a[_i][_j] != b[_i][_j]:
                     return False
         return True
 
@@ -155,20 +185,20 @@ def rotation(pion, couleur):
     if equals(_rotation[0], _rotation[1]):
         _rotation.pop(1)
 
-    for i in range(1, len(_rotation) + 1):
-        print(i, " " * 5, end='')
-    print()
-
     if len(_rotation) <= 1:
         return
+
+    for i in range(1, len(_rotation) + 1):
+        print(i, "  " * 5, end='')
+    print()
 
     for i in range(5):
         for elem in _rotation:
             for j in range(5):
                 if elem[i][j] == 1:
-                    print(couleur + ' ' + Back.RESET, end='')
+                    print(couleur + '  ' + Back.RESET, end='')
                 else:
-                    print(end=' ')
+                    print(end='  ')
             print(end="  ")
         print()
 
@@ -176,7 +206,7 @@ def rotation(pion, couleur):
     x = 0
     while not _quit:
         x = int(input("Quelle rotation ?"))
-        if not 1 <= x <= 4:
+        if not 1 <= x <= len(_rotation):
             print("choix non valide")
             continue
         _quit = True
@@ -187,13 +217,32 @@ def rotation(pion, couleur):
 def jouer():
     coup = 0
     coup_valide = False
-    afficher_grille(grille)
+
+    pion = input("A chaque coup la partie est sauvegardée\ncharger la partie ? (o/n) :")
+    if pion == 'o':
+        coup = charger_partie()
+    else:
+        try:
+            os.remove("loads/save")
+        except FileNotFoundError as e:
+            print("il n'y a pas de sauvegarde")
+            input("appuyer sur entrer pour continuer...")
+
     while not coup_valide:
+        afficher_grille(grille)
         couleur = choix_couleur(coup)
-        piece_dispo(couleur)
-        pion = int(input('quel pion voulez vous jouer ? '))
+        piece_dispo(dico, couleur)
+        try:
+            pion = int(input('quel pion voulez vous jouer ? '))
+            if not 1 <= pion <= 23:
+                raise Exception("wtf wtf wtf")
+        except Exception as e:
+            print("rentrez un numéro")
+            print(e)
+            continue
         if not dico[couleur][pion - 1]:
             print("Piece non disponible ")
+            continue
         rotation(pion, couleur)
 
         if coup == 0:
@@ -211,14 +260,16 @@ def jouer():
         else:
             x = int(input('Entrez la ligne :'))
             y = int(input('Entrez la colonne : '))
+
         if 0 < x < 21 and 0 < y < 21:
-            coup_valide = ajouter(grille, x, y, pion, couleur, coup >= 4)
-            afficher_grille(grille)
+            coup_valide = ajouter(grille, x, y, pion, couleur)
             if coup_valide:
-                coup = coup + 1
+                coup += 1
             else:
                 print("coup non valide")
+                continue
+            sauvegarder_partie(coup)
         else:
-            print('Coordonnee non valides')
+            print('Coordonnées non valides')
 
         coup_valide = False
