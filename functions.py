@@ -52,8 +52,9 @@ def point_encrage(pion):
 
 def placer(x, y, pion, _grille, couleur):
     index = pion - 1
-
     pion = dico[couleur][index]
+    y += point_encrage(pion)
+
     for i in range(5):
         for j in range(5):
             if pion[i][j] == 1:
@@ -81,12 +82,6 @@ def ajouter(_grille, x, y, pion, couleur, coup):
         if not placer_premier(_grille, pion, x, y, coup):
             return False
 
-    for i in range(5):
-        for j in range(5):
-            if pion[i][j] == 1:
-                _grille[x + i][y + j] = (couleur + '  ' + Back.RESET)
-
-    dico[couleur][index] = False
     return True
 
 
@@ -94,9 +89,9 @@ def fin_partie(couleur, _grille, coup):
     longueur = len(dico[couleur])
 
     for index in range(longueur):
-        for x in range(20):
-            for y in range(20):
-                if ajouter(_grille, x, y, index, couleur, coup):
+        for x in range(1, 21):
+            for y in range(1, 21):
+                if dico[couleur][index - 1] and ajouter(_grille, x, y, index, couleur, coup):
                     return False
             else:
                 return True
@@ -265,6 +260,7 @@ def jouer():
             if 0 < x < 21 and 0 < y < 21:
                 coup_valide = ajouter(grille, x, y, pion, couleur, coup)
                 if coup_valide:
+                    placer(x, y, pion, grille, couleur)
                     coup += 1
                 else:
                     print("coup non valide")
@@ -275,5 +271,5 @@ def jouer():
                 print('Coordonnées non valides')
 
             coup_valide = False
-        else :
+        else:
             coup = coup + 1
