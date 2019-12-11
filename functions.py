@@ -59,7 +59,19 @@ def dans_un_coin(x, y, _grille, couleur):
     return False
 
 
-def ajouter(_grille, x, y, pion, couleur):
+def placer(x, y, pion, _grille, couleur):
+    index = pion - 1
+
+    pion = dico[couleur][index]
+    for i in range(5):
+        for j in range(5):
+            if pion[i][j] == 1:
+                _grille[x + i][y + j] = (couleur + '  ' + Back.RESET)
+
+    dico[couleur][index] = False
+
+
+def ajouter(_grille, x, y, pion, couleur, coup):
     index = pion - 1
 
     pion = dico[couleur][index]
@@ -81,10 +93,15 @@ def ajouter(_grille, x, y, pion, couleur):
     for i in range(5):
         for j in range(5):
             if pion[i][j] == 1:
-                _grille[x + i][y + j] = (couleur + '  ' + Back.RESET)
-
-    dico[couleur][index] = False
-    return True
+                if coup > 3:
+                    if _grille[x - 1 + i][y - 1 + i] == (couleur + '  ' + Back.RESET) or _grille[x - 1 + i][y + 1 + i] == (
+                            couleur + '  ' + Back.RESET) or _grille[x + 1 + i][y - 1 + i] == (couleur + '  ' + Back.RESET) or \
+                            _grille[x + 1 + i][y + 1 + i] == (couleur + '  ' + Back.RESET):
+                        return True
+    if coup > 3 :
+        return False
+    else :
+        return True
 
 
 def choix_couleur(coup):
@@ -260,16 +277,15 @@ def jouer():
         else:
             x = int(input('Entrez la ligne :'))
             y = int(input('Entrez la colonne : '))
-
         if 0 < x < 21 and 0 < y < 21:
-            coup_valide = ajouter(grille, x, y, pion, couleur)
+            coup_valide = ajouter(grille, x, y, pion, couleur, coup)
+            afficher_grille(grille)
             if coup_valide:
-                coup += 1
+                placer(x, y, pion, grille, couleur)
+                coup = coup + 1
             else:
                 print("coup non valide")
-                continue
-            sauvegarder_partie(coup)
         else:
-            print('Coordonnées non valides')
+            print('Coordonnee non valides')
 
         coup_valide = False
