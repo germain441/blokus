@@ -112,10 +112,9 @@ def charger_partie():
         dico = config["pieces"]
         grille = config["grille"]
         return config["coup"]
-    except (OSError, IOError) as e:
+    except (OSError, IOError):
         print("Il n'y a pas de fichier de sauvegarde")
         input("appuyer entrer ")
-        print(e)
         return 0
 
 
@@ -238,7 +237,7 @@ def jouer():
             pion = int(input('quel pion voulez vous jouer ? '))
             if not 1 <= pion <= 23:
                 raise Exception("wtf wtf wtf")
-        except e:
+        except ValueError:
             print("rentrez un numéro")
             continue
         if not dico[couleur][pion - 1]:
