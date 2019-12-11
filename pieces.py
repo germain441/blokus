@@ -1,21 +1,16 @@
-from colorama import Fore, Back, Style
+from colorama import Back
 
-# 1 block
 p1 = [[1, 0, 0, 0, 0],
       [0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0]]
 
-# 2 block
-
 p2 = [[1, 0, 0, 0, 0],
       [1, 0, 0, 0, 0],
       [0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0]]
-
-# 3 block
 
 p3 = [[1, 0, 0, 0, 0],
       [1, 0, 0, 0, 0],
@@ -181,7 +176,36 @@ def piece_dispo(dico, couleur):
         print()
 
 
-piece_R = get_piece()
-piece_B = get_piece()
-piece_J = get_piece()
-piece_V = get_piece()
+def placer_premier(_grille, piece, x, y, coup):
+    res = 0
+    if _grille[1][1] != '• ':
+        res += 1
+    if _grille[1][20] != '• ':
+        res += 1
+    if _grille[20][1] != '• ':
+        res += 1
+    if _grille[20][20] != '• ':
+        res += 1
+
+    if coup != res:
+        return False
+
+    res = True
+
+    for i in range(5):
+        if i + x > 20:
+            return False
+        if i + x != 20 and i + x != 1:
+            continue
+        for j in range(5):
+            if j + y > 20:
+                return False
+            if j + y != 20 and j + y != 1:
+                continue
+            res = False
+            if _grille[i + x][j + y] != '• ' or piece[i][j] != 1:
+                return False
+
+    if res:
+        return False
+    return True
