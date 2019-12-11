@@ -1,6 +1,7 @@
 from pieces import *
 import pickle
 import os
+from random import randint
 
 dico = {Back.RED: get_piece(), Back.BLUE: get_piece(), Back.YELLOW: get_piece(), Back.GREEN: get_piece()}
 
@@ -87,6 +88,18 @@ def ajouter(_grille, x, y, pion, couleur, coup):
 
     dico[couleur][index] = False
     return True
+
+
+def fin_partie(couleur, _grille, coup):
+    longueur = len(dico[couleur])
+
+    for index in range(longueur):
+        for x in range(20):
+            for y in range(20):
+                if ajouter(_grille, x, y, index, couleur, coup):
+                    return False
+            else:
+                return True
 
 
 def choix_couleur(coup):
@@ -232,32 +245,35 @@ def jouer():
     while not coup_valide:
         afficher_grille(grille)
         couleur = choix_couleur(coup)
-        piece_dispo(dico, couleur)
-        try:
-            pion = int(input('quel pion voulez vous jouer ? '))
-            if not 1 <= pion <= 23:
-                raise Exception("wtf wtf wtf")
-        except ValueError:
-            print("rentrez un numéro")
-            continue
-        if not dico[couleur][pion - 1]:
-            print("Piece non disponible ")
-            continue
-        rotation(pion, couleur)
-
-        x = int(input('Entrez la ligne :'))
-        y = int(input('Entrez la colonne : '))
-
-        if 0 < x < 21 and 0 < y < 21:
-            coup_valide = ajouter(grille, x, y, pion, couleur, coup)
-            if coup_valide:
-                coup += 1
-            else:
-                print("coup non valide")
-                input("appuyer sur entrer pour continuer...")
+        if not fin_partie(couleur, grille, coup):
+            piece_dispo(dico, couleur)
+            try:
+                pion = int(input('quel pion voulez vous jouer ? '))
+                if not 1 <= pion <= 23:
+                    raise Exception("wtf wtf wtf")
+            except ValueError:
+                print("rentrez un numéro")
                 continue
-            sauvegarder_partie(coup)
-        else:
-            print('Coordonnées non valides')
+            if not dico[couleur][pion - 1]:
+                print("Piece non disponible ")
+                continue
+            rotation(pion, couleur)
 
-        coup_valide = False
+            x = int(input('Entrez la ligne :'))
+            y = int(input('Entrez la colonne : '))
+
+            if 0 < x < 21 and 0 < y < 21:
+                coup_valide = ajouter(grille, x, y, pion, couleur, coup)
+                if coup_valide:
+                    coup += 1
+                else:
+                    print("coup non valide")
+                    input("appuyer sur entrer pour continuer...")
+                    continue
+                sauvegarder_partie(coup)
+            else:
+                print('Coordonnées non valides')
+
+            coup_valide = False
+        else :
+            coup = coup + 1
