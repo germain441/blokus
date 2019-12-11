@@ -91,7 +91,7 @@ def fin_partie(couleur, _grille, coup):
     for index in range(longueur):
         for x in range(1, 21):
             for y in range(1, 21):
-                if dico[couleur][index - 1] and ajouter(_grille, x, y, index, couleur, coup):
+                if dico[couleur][index] and ajouter(_grille, x, y, index + 1, couleur, coup):
                     return False
             else:
                 return True
