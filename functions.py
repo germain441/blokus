@@ -72,12 +72,11 @@ def ajouter(_grille, x, y, pion, couleur, coup):
 
     pion = dico[couleur][index]
     y += point_encrage(pion)
-
     if coup > 3:
         coin = False
         for i in range(5):
             for j in range(5):
-                if pion[i][j] == 1:
+                if pion[i][j] != 1:
                     continue
                 if _grille[x + i][y + j] != '• ':
                     return False
@@ -91,8 +90,8 @@ def ajouter(_grille, x, y, pion, couleur, coup):
                         _grille[x + 1 + i][y - 1 + j] == case(couleur)) or (
                         _grille[x + 1 + i][y + 1 + j] == case(couleur)):
                     coin = True
-                if not coin:
-                    return False
+        if not coin:
+            return False
     else:
         if not placer_premier(_grille, pion, x, y, coup):
             return False
@@ -150,6 +149,24 @@ def _coup(liste):
             if _elem:
                 i += 1
     return i
+
+
+def bot(_grille, couleur, coup):
+    res = []
+
+    for elem in range(21):
+        if not dico[couleur][elem]:
+            continue
+        for x in range(1, 21):
+            for y in range(1, 21):
+                if ajouter(_grille, x, y, elem + 1, couleur, coup):
+                    res.append((elem + 1, x, y))
+
+    if len(res) < 1:
+        input("aucun pion ne peut etre placé")
+    elem, x, y = res[randint(0, len(res)-1)]
+
+    placer(x, y, elem, _grille, couleur)
 
 
 def rotation(pion, couleur):
@@ -257,11 +274,15 @@ def jouer():
     except Exception as e:
         print(e)
 
+    b = 0
     while not coup_valide:
         afficher_grille(grille)
         couleur = choix_couleur(coup)
         if not fin_partie(couleur, grille, coup):
             piece_dispo(dico, couleur)
+            bot(grille, couleur, coup)
+            coup += 1
+            continue
             try:
                 pion = int(input('quel pion voulez vous jouer ? '))
                 if not 1 <= pion <= 23:
@@ -293,4 +314,7 @@ def jouer():
 
             coup_valide = False
         else:
-            coup = coup + 1
+            coup += 1
+            b += 1
+            if b == 4:
+                input("fin")

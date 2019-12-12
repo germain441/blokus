@@ -141,9 +141,9 @@ def largeur_piece(piece):
     return largeur + 1
 
 
-def numero_piece(liste):
+def numero_piece(liste_pions):
     for i in range(1, 22):
-        if liste[i - 1]:
+        if liste_pions[i - 1]:
             if i == 1 or i == 2 or i == 3 or i == 6 or i == 13 or i == 14 or i == 21:
                 print(i, end='   ')
             elif i == 4 or i == 5 or i == 7 or i == 8:
@@ -198,9 +198,9 @@ def placer_premier(_grille, piece, x, y, coup):
                 continue
             if i + x > 20 or j + y > 20:
                 return False
-            if j + y != 20 and j + y != 1:
-                continue
-            res = False
+            if (i + x == 20 or i + x == 1) and (j + y == 1 or j + y == 20):
+                res = False
+
             if _grille[i + x][j + y] != '• ':
                 return False
 
