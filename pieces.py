@@ -193,8 +193,6 @@ def placer_premier(_grille, piece, x, y, coup):
     res = True
 
     for i in range(5):
-        if i + x != 20 and i + x != 1:
-            continue
         for j in range(5):
             if piece[i][j] != 1:
                 continue
@@ -208,4 +206,5 @@ def placer_premier(_grille, piece, x, y, coup):
 
     if res:
         return False
+
     return True

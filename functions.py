@@ -43,6 +43,10 @@ def afficher_grille(_grille):
     print('\n')
 
 
+def case(couleur):
+    return couleur + '  ' + Back.RESET
+
+
 def point_encrage(pion):
     for j in range(5):
         if pion[0][j] == 1:
@@ -58,7 +62,7 @@ def placer(x, y, pion, _grille, couleur):
     for i in range(5):
         for j in range(5):
             if pion[i][j] == 1:
-                _grille[x + i][y + j] = (couleur + '  ' + Back.RESET)
+                _grille[x + i][y + j] = (case(couleur))
 
     dico[couleur][index] = False
 
@@ -70,13 +74,24 @@ def ajouter(_grille, x, y, pion, couleur, coup):
     y += point_encrage(pion)
 
     if coup > 3:
+        coin = False
         for i in range(5):
             for j in range(5):
-                if pion[i][j] == 1 and (_grille[x + i][y + j] != '• ' or
-                                        _grille[x - 1 + i][y + j] == couleur + '  ' + Back.RESET or
-                                        _grille[x + 1 + i][y + j] == couleur + '  ' + Back.RESET or
-                                        _grille[x + i][y - 1 + j] == couleur + '  ' + Back.RESET or
-                                        _grille[x + i][y + 1 + j] == couleur + '  ' + Back.RESET):
+                if pion[i][j] == 1:
+                    continue
+                if _grille[x + i][y + j] != '• ':
+                    return False
+                if _grille[x - 1 + i][y + j] == case(couleur) or (
+                        _grille[x + 1 + i][y + j] == case(couleur)) or (
+                        _grille[x + i][y - 1 + j] == case(couleur)) or (
+                        _grille[x + i][y + 1 + j] == case(couleur)):
+                    return False
+                if _grille[x - 1 + i][y - 1 + j] == case(couleur) or (
+                        _grille[x - 1 + i][y + 1 + j] == case(couleur)) or (
+                        _grille[x + 1 + i][y - 1 + j] == case(couleur)) or (
+                        _grille[x + 1 + i][y + 1 + j] == case(couleur)):
+                    coin = True
+                if not coin:
                     return False
     else:
         if not placer_premier(_grille, pion, x, y, coup):
@@ -89,12 +104,14 @@ def fin_partie(couleur, _grille, coup):
     longueur = len(dico[couleur])
 
     for index in range(longueur):
+        if not dico[couleur][index]:
+            continue
         for x in range(1, 21):
             for y in range(1, 21):
-                if dico[couleur][index] and ajouter(_grille, x, y, index + 1, couleur, coup):
+                z = ajouter(_grille, x, y, index + 1, couleur, coup)
+                if not z:
                     return False
-            else:
-                return True
+    return True
 
 
 def choix_couleur(coup):
@@ -205,7 +222,7 @@ def rotation(pion, couleur):
         for elem in _rotation:
             for j in range(5):
                 if elem[i][j] == 1:
-                    print(couleur + '  ' + Back.RESET, end='')
+                    print(case(couleur), end='')
                 else:
                     print(end='  ')
             print(end="  ")
@@ -214,7 +231,10 @@ def rotation(pion, couleur):
     _quit = False
     x = 0
     while not _quit:
-        x = int(input("Quelle rotation ?"))
+        try:
+            x = int(input("Quelle rotation ?"))
+        except ValueError:
+            pass
         if not 1 <= x <= len(_rotation):
             print("choix non valide")
             continue
@@ -252,6 +272,7 @@ def jouer():
             if not dico[couleur][pion - 1]:
                 print("Piece non disponible ")
                 continue
+
             rotation(pion, couleur)
 
             x = int(input('Entrez la ligne :'))
