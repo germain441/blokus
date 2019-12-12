@@ -163,11 +163,11 @@ def bot(_grille, couleur, coup):
                     res.append((elem + 1, x, y))
 
     if len(res) < 1:
-        input("aucun pion ne peut etre placé")
-    elem, x, y = res[randint(0, len(res)-1)]
+        return False
+    elem, x, y = res[randint(0, len(res) - 1)]
 
     placer(x, y, elem, _grille, couleur)
-
+    return True
 
 def rotation(pion, couleur):
     index = pion - 1
@@ -260,6 +260,21 @@ def rotation(pion, couleur):
     dico[couleur][index] = [pion, pion1, pion2, pion3][x - 1]
 
 
+def compter_points(couleur):
+    score = 0
+    for i in range(21):
+        if dico[couleur][i]:
+            for x in range(5):
+                for y in range(5):
+                    if dico[couleur][i][x][y] == 1:
+                        score = score - 1
+    if score == 0:
+        score = 15
+    return score
+
+
+# def classement(a,b,c,d):
+
 def jouer():
     coup = 0
     coup_valide = False
@@ -278,9 +293,10 @@ def jouer():
     while not coup_valide:
         afficher_grille(grille)
         couleur = choix_couleur(coup)
-        if not fin_partie(couleur, grille, coup):
+        if not fin_partie(couleur, grille, coup) and b != 4:
             piece_dispo(dico, couleur)
-            bot(grille, couleur, coup)
+            if not bot(grille, couleur, coup):
+                b = b + 1
             coup += 1
             continue
             try:
@@ -290,6 +306,7 @@ def jouer():
             except ValueError:
                 print("rentrez un numéro")
                 continue
+
             if not dico[couleur][pion - 1]:
                 print("Piece non disponible ")
                 continue
@@ -315,6 +332,15 @@ def jouer():
             coup_valide = False
         else:
             coup += 1
-            b += 1
             if b == 4:
-                input("fin")
+                input("Fin : appuyez sur entree pour voir les scores")
+                break
+    piece_dispo(dico, Back.RED)
+    print('point_rouge :', compter_points(Back.RED))
+    piece_dispo(dico, Back.BLUE)
+    print('point_bleu :', compter_points(Back.BLUE))
+    piece_dispo(dico, Back.GREEN)
+    print('point_vert :', compter_points(Back.GREEN))
+    piece_dispo(dico, Back.YELLOW)
+    print('point_jaune :', compter_points(Back.YELLOW))
+
