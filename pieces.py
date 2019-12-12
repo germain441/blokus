@@ -140,7 +140,7 @@ def largeur_piece(piece):
                 largeur = y
     return largeur + 1
 
-
+ 
 def numero_piece(liste_pions):
     for i in range(1, 22):
         if liste_pions[i - 1]:
