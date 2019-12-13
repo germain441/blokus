@@ -4,6 +4,7 @@ import os
 from random import randint
 
 dico = {Back.RED: get_piece(), Back.BLUE: get_piece(), Back.YELLOW: get_piece(), Back.GREEN: get_piece()}
+ordre_couleur = [Back.RED, Back.BLUE, Back.YELLOW, Back.GREEN]
 
 
 def init_grille():
@@ -114,7 +115,7 @@ def fin_partie(couleur, _grille, coup):
 
 
 def choix_couleur(coup):
-    return [Back.RED, Back.BLUE, Back.GREEN, Back.YELLOW][coup % 4]
+    return ordre_couleur[coup % 4]
 
 
 def sauvegarder_partie(coup):
@@ -168,6 +169,7 @@ def bot(_grille, couleur, coup):
 
     placer(x, y, elem, _grille, couleur)
     return True
+
 
 def rotation(pion, couleur):
     index = pion - 1
@@ -260,7 +262,7 @@ def rotation(pion, couleur):
     dico[couleur][index] = [pion, pion1, pion2, pion3][x - 1]
 
 
-def compter_points(couleur):
+def compter_points(couleur, dernier_pion):
     score = 0
     for i in range(21):
         if dico[couleur][i]:
@@ -269,13 +271,17 @@ def compter_points(couleur):
                     if dico[couleur][i][x][y] == 1:
                         score = score - 1
     if score == 0:
-        score = 15
+        if dernier_pion == 1 :
+            score = 21
+        else :
+            score = 15
     return score
 
 
 # def classement(a,b,c,d):
 
 def jouer():
+    global ordre_couleur
     coup = 0
     coup_valide = False
 
@@ -289,18 +295,40 @@ def jouer():
     except Exception as e:
         print(e)
 
+    _bot = 0
+    while not 1 <= _bot <= 3:
+        _bot = int(input("Choisir ...\n \t1 - Voir 2 bots jouer\n\t2 - jouer avec un bot\n\t3 - jouer sans bot\n : "))
+
+    if _bot == 1:
+        input("Bot 1 gère le Rouge et le Bleu. Bot 2 gère le Jaune et le Vert. Appuyer sur entrer pour continuer")
+    else:
+        tmp = []
+        while len(ordre_couleur) > 2:
+            for elem in ordre_couleur:
+                print(elem + "  " + Back.RESET)
+            a = int(input("Joueur 1 choisi une couleur (1 - " + str(len(ordre_couleur)) + ") : "))
+            if not 1 <= a <= len(ordre_couleur):
+                continue
+            tmp.append(ordre_couleur.pop(a-1))
+        if _bot == 2:
+            ordre_couleur = ordre_couleur + tmp
+        else:
+            ordre_couleur = tmp + ordre_couleur
+
     b = 0
     while not coup_valide:
         afficher_grille(grille)
         couleur = choix_couleur(coup)
         if not fin_partie(couleur, grille, coup) and b != 4:
             piece_dispo(dico, couleur)
-            if not bot(grille, couleur, coup):
-                b = b + 1
-            coup += 1
-            continue
+            if _bot != 3 and not coup % _bot:
+                if not bot(grille, couleur, coup):
+                    b += 1
+                coup += 1
+                continue
             try:
                 pion = int(input('quel pion voulez vous jouer ? '))
+                dernier_pion = pion
                 if not 1 <= pion <= 23:
                     raise Exception("wtf wtf wtf")
             except ValueError:
@@ -336,11 +364,10 @@ def jouer():
                 input("Fin : appuyez sur entree pour voir les scores")
                 break
     piece_dispo(dico, Back.RED)
-    print('point_rouge :', compter_points(Back.RED))
+    print('point_rouge :', compter_points(Back.RED, dernier_pion))
     piece_dispo(dico, Back.BLUE)
-    print('point_bleu :', compter_points(Back.BLUE))
+    print('point_bleu :', compter_points(Back.BLUE, dernier_pion))
     piece_dispo(dico, Back.GREEN)
-    print('point_vert :', compter_points(Back.GREEN))
+    print('point_vert :', compter_points(Back.GREEN, dernier_pion))
     piece_dispo(dico, Back.YELLOW)
-    print('point_jaune :', compter_points(Back.YELLOW))
-
+    print('point_jaune :', compter_points(Back.YELLOW, dernier_pion))
