@@ -284,7 +284,7 @@ def jouer():
     global ordre_couleur
     coup = 0
     coup_valide = False
-
+    dernier_pion = None
     try:
         if os.path.isfile("loads/save"):
             pion = input("A chaque coup la partie est sauvegardée\ncharger la partie ? (o/n) :")
@@ -363,11 +363,10 @@ def jouer():
             if b == 4:
                 input("Fin : appuyez sur entree pour voir les scores")
                 break
-    piece_dispo(dico, Back.RED)
-    print('point_rouge :', compter_points(Back.RED, dernier_pion))
-    piece_dispo(dico, Back.BLUE)
-    print('point_bleu :', compter_points(Back.BLUE, dernier_pion))
-    piece_dispo(dico, Back.GREEN)
-    print('point_vert :', compter_points(Back.GREEN, dernier_pion))
-    piece_dispo(dico, Back.YELLOW)
-    print('point_jaune :', compter_points(Back.YELLOW, dernier_pion))
+    piece_dispo(dico, ordre_couleur[0])
+    piece_dispo(dico, ordre_couleur[1])
+    print('point joueur 1 :', compter_points(ordre_couleur[0], dernier_pion) + compter_points(ordre_couleur[1], dernier_pion) )
+    piece_dispo(dico, ordre_couleur[2])
+    piece_dispo(dico, ordre_couleur[3])
+    print('point joueur 2 :', compter_points(ordre_couleur[2], dernier_pion) + compter_points(ordre_couleur[3], dernier_pion) )
+
