@@ -316,6 +316,7 @@ def jouer():
             ordre_couleur = tmp + ordre_couleur
 
     b = 0
+    dernier_pion = None
     while not coup_valide:
         afficher_grille(grille)
         couleur = choix_couleur(coup)
